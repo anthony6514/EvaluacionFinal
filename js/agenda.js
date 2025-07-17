@@ -72,8 +72,7 @@ const cargarEventos = async () => {
     });
 }
 
-const form = document.getElementById("form-evento");
-form.addEventListener('submit', async (e) => {
+document.getElementById("form-evento").addEventListener('submit', async (e) => {
     e.preventDefault();
     const nombre = document.getElementById("nombre").value.trim();
     const fecha = document.getElementById("fecha").value;
@@ -81,11 +80,10 @@ form.addEventListener('submit', async (e) => {
     const descripcion = document.getElementById("descripcion").value.trim();
     const imagen = document.getElementById("imagen") ? document.getElementById("imagen").value.trim() : "";
     await agregarEvento(nombre, fecha, hora, descripcion, imagen);
-    form.reset();
+    e.target.reset();
 });
 
-const filtroFecha = document.getElementById("filtro-fecha");
-filtroFecha.addEventListener('change', async () => {
+document.getElementById("filtro-fecha").addEventListener('change', async () => {
     await cargarEventos();
 });
 
