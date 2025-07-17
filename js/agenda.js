@@ -11,12 +11,13 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 const agregarEvento = async (nombre, fecha, hora, descripcion, imagen) => {
-    const eventos = await db.collection("eventos")
-        .where("nombre", "==", nombre)
-        .where("fecha", "==", fecha)
-        .get();
+    const eventosSnapshot = await db.collection("eventos").get();
+    const existe = eventosSnapshot.docs.some(doc => {
+        const data = doc.data();
+        return data.nombre === nombre && data.fecha === fecha;
+    });
 
-    if (!eventos.empty) {
+    if (existe) {
         alert("Ya existe un evento con ese nombre en esa fecha.");
         return;
     }
@@ -31,17 +32,19 @@ const cargarEventos = async () => {
 
     let filtro = document.getElementById('filtro-fecha').value;
     let ref = db.collection("eventos");
-    if (filtro) {
-        ref = ref.where("fecha", "==", filtro);
-    }
     const eventos = await ref.get();
 
-    if (eventos.empty) {
+    let docs = eventos.docs;
+    if (filtro) {
+        docs = docs.filter(doc => doc.data().fecha === filtro);
+    }
+
+    if (docs.length === 0) {
         lista.innerHTML = "<p>No hay eventos para mostrar.</p>";
         return;
     }
 
-    eventos.forEach(doc => {
+    docs.forEach(doc => {
         const evento = doc.data();
         const div = document.createElement('div');
         div.className = "evento";
@@ -89,4 +92,4 @@ document.getElementById("filtro-fecha").addEventListener('change', async () => {
 
 window.onload = () => {
     cargarEventos();
-};
+}
